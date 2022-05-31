@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ion/flutter_ion.dart' as ion;
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -39,6 +38,13 @@ class _StreamingPageState extends State<StreamingPage> {
     await _remoteRender.initialize();
   }
 
+  @override
+  deactivate() {
+    super.deactivate();
+    _localRender.dispose();
+    _remoteRender.dispose();
+  }
+
   getUrl() {
     return ion.JsonRPCSignal(
         'wss://aucprobid.azurewebsites.net/webcastauction');
@@ -52,18 +58,18 @@ class _StreamingPageState extends State<StreamingPage> {
 
   static final defaultConfig = {
     'iceServers': [
-      {'urls': 'stun:stun.stunprotocol.org:3478'}
+      {'url': 'stun:stun.l.google.com:19302'},
     ],
     'sdpSemantics': 'unified-plan'
   };
 
   void initSfu() async {
     ion.Signal signal = await getUrl();
-    _client =
-        await ion.Client.create(sid: '9636896968', uid: _uuid, signal: signal);
+    _client = await ion.Client.create(
+        sid: '9636896968', uid: _uuid, signal: signal, config: defaultConfig);
     if (!isPub) {
-      signal.onready = () => _client?.join('9636896968', _uuid);
       _client?.ontrack = (track, ion.RemoteStream remoteStream) {
+        print(track.id);
         if (track.kind == 'video') {
           print("ontrack: remote stream => ${remoteStream.id}");
           setState(() {

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:streaming/stream4/streaming4.dart';
 import 'package:streaming/streaming.dart';
+import 'package:streaming/streaming2.dart';
+import 'package:streaming/stream3/streaming3.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,6 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final ctrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              TextFormField(controller: ctrl, keyboardType: TextInputType.number,),
               ElevatedButton(
                   onPressed: () => openPage(false),
                   child: const Text('Client')),
@@ -51,6 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   openPage(bool isPub) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (_) => StreamingPage(isPub)));
+        context, MaterialPageRoute(builder: (_) => Streaming3Page(isPub, ctrl.text)));
   }
 }
