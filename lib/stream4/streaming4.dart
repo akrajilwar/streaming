@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:uuid/uuid.dart';
 
-import '../websocket.dart';
+import './signal.dart';
 
 class Streaming4Page extends StatefulWidget {
   final bool isPub;
@@ -15,61 +15,25 @@ class Streaming4Page extends StatefulWidget {
 }
 
 class _Streaming4PageState extends State<Streaming4Page> {
-  final String _url = "wss://aucprobid.azurewebsites.net/webcastauction";
-  final String sessionId = 'test session';
+  Signal? _signal;
 
-  final String _uuid = const Uuid().v4();
-
-  SimpleWebSocket? _socket;
-
-  RTCVideoRenderer _localRenderer = RTCVideoRenderer();
-  RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
-
-  Function(MediaStream stream)? onLocalStream;
-  Function(MediaStream stream)? onAddRemoteStream;
-
-  final JsonEncoder _encoder = const JsonEncoder();
-  final JsonDecoder _decoder = const JsonDecoder();
-
-  String get sdpSemantics =>
-      WebRTC.platformIsWindows ? 'plan-b' : 'unified-plan';
-
-  final Map<String, dynamic> _iceServers = {
-    'iceServers': [
-      {'url': 'stun:stun.l.google.com:19302'},
-      {
-        "urls": ["turn:13.250.13.83:3478?transport=udp"],
-        "username": "YzYNCouZM1mhqhmseWk6",
-        "credential": "YzYNCouZM1mhqhmseWk6"
-      }
-    ]
-  };
-
-  final Map<String, dynamic> _config = {
-    'mandatory': {},
-    'optional': [
-      {'DtlsSrtpKeyAgreement': true},
-    ]
-  };
+  final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
+  final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
 
   connect() async {
-    _socket = SimpleWebSocket(_url);
+    _signal = Signal(widget.isPub)..connect();
 
-    _socket?.onOpen = () {
-      print('Websocket: onOpen');
-    };
-
-    _socket?.onMessage = (message) {
-      print('Websocket: Received data: $message');
-    };
-
-    onLocalStream = (stream) {
+    _signal?.onLocalStream = (stream) {
       setState(() {
         _localRenderer.srcObject = stream;
       });
     };
 
-    await _socket?.connect();
+    _signal?.onAddRemoteStream = (stream) {
+      setState(() {
+        _remoteRenderer.srcObject = stream;
+      });
+    };
   }
 
   initRenderer() async {
@@ -107,8 +71,10 @@ class _Streaming4PageState extends State<Streaming4Page> {
                 widget.isPub ? _localRenderer : _remoteRenderer,
               ),
             ),
-            ElevatedButton(
-                onPressed: () => _sendMessage(), child: const Text('Start'))
+            widget.isPub
+                ? ElevatedButton(
+                    onPressed: () => _sendMessage(), child: const Text('Start'))
+                : const SizedBox()
           ],
         ),
       ),
@@ -116,6 +82,7 @@ class _Streaming4PageState extends State<Streaming4Page> {
   }
 
   _sendMessage() async {
-
+    _signal?.sendStream();
   }
+
 }

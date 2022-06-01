@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:streaming/stream4/streaming4.dart';
+import 'package:streaming/stream5/stream5page.dart';
 import 'package:streaming/streaming.dart';
 import 'package:streaming/streaming2.dart';
 import 'package:streaming/stream3/streaming3.dart';
+import 'package:video_stream/camera.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
 
@@ -43,7 +49,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextFormField(controller: ctrl, keyboardType: TextInputType.number,),
+              TextFormField(
+                controller: ctrl,
+                keyboardType: TextInputType.number,
+              ),
               ElevatedButton(
                   onPressed: () => openPage(false),
                   child: const Text('Client')),
@@ -56,6 +65,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   openPage(bool isPub) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (_) => Streaming3Page(isPub, ctrl.text)));
+        context, MaterialPageRoute(builder: (_) => Streaming5Page(isPub)));
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

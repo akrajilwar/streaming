@@ -54,7 +54,7 @@ class SimpleWebSocket {
       };
 
       HttpClientRequest request =
-      await client.getUrl(Uri.parse(url)); // form the correct url here
+          await client.getUrl(Uri.parse(url)); // form the correct url here
       request.headers.add('Connection', 'Upgrade');
       request.headers.add('Upgrade', 'websocket');
       request.headers.add(

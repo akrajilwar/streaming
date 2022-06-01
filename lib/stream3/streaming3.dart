@@ -68,6 +68,7 @@ class _Streaming3PageState extends State<Streaming3Page> {
   @override
   deactivate() {
     super.deactivate();
+    _signaling?.close();
     _localRenderer.dispose();
     _remoteRenderer.dispose();
   }
@@ -75,6 +76,7 @@ class _Streaming3PageState extends State<Streaming3Page> {
   @override
   dispose() {
     super.dispose();
+    _signaling?.close();
     _localRenderer.dispose();
     _remoteRenderer.dispose();
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ion/flutter_ion.dart' as ion;
+// import 'package:flutter_ion/flutter_ion.dart' as ion;
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:uuid/uuid.dart';
 
@@ -46,14 +46,14 @@ class _StreamingPageState extends State<StreamingPage> {
   }
 
   getUrl() {
-    return ion.JsonRPCSignal(
-        'wss://aucprobid.azurewebsites.net/webcastauction');
-    // return ion.JsonRPCSignal(
-    //     kIsWeb ? 'ws://localhost:8080' : 'ws://192.168.29.170:8080');
+    // String url = 'wss://aucprobid.azurewebsites.net/webcastauction';
+    String url = 'http://192.168.29.122:8080';
+
+    // return ion.JsonRPCSignal(url);
   }
 
-  ion.Client? _client;
-  ion.LocalStream? _localStream;
+  // ion.Client? _client;
+  // ion.LocalStream? _localStream;
   final String _uuid = const Uuid().v4();
 
   static final defaultConfig = {
@@ -64,31 +64,31 @@ class _StreamingPageState extends State<StreamingPage> {
   };
 
   void initSfu() async {
-    ion.Signal signal = await getUrl();
-    _client = await ion.Client.create(
-        sid: '9636896968', uid: _uuid, signal: signal, config: defaultConfig);
-    if (!isPub) {
-      _client?.ontrack = (track, ion.RemoteStream remoteStream) {
-        print(track.id);
-        if (track.kind == 'video') {
-          print("ontrack: remote stream => ${remoteStream.id}");
-          setState(() {
-            _remoteRender.srcObject = remoteStream.stream;
-          });
-        }
-      };
-    }
+    // ion.Signal signal = await getUrl();
+    // _client = await ion.Client.create(
+    //     sid: '9636896968', uid: _uuid, signal: signal, config: defaultConfig);
+    // if (!isPub) {
+    //   _client?.ontrack = (track, ion.RemoteStream remoteStream) {
+    //     print(track.id);
+    //     if (track.kind == 'video') {
+    //       print("ontrack: remote stream => ${remoteStream.id}");
+    //       setState(() {
+    //         _remoteRender.srcObject = remoteStream.stream;
+    //       });
+    //     }
+    //   };
+    // }
   }
 
   void publish() async {
-    _localStream = await ion.LocalStream.getUserMedia(
-        constraints: ion.Constraints.defaults..simulcast = false);
-
-    setState(() {
-      _localRender.srcObject = _localStream?.stream;
-    });
-
-    await _client?.publish(_localStream!);
+    // _localStream = await ion.LocalStream.getUserMedia(
+    //     constraints: ion.Constraints.defaults..simulcast = false);
+    //
+    // setState(() {
+    //   _localRender.srcObject = _localStream?.stream;
+    // });
+    //
+    // await _client?.publish(_localStream!);
   }
 
   @override
